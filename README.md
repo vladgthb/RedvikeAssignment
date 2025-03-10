@@ -218,6 +218,8 @@ def create_order(request):
       - We differentiate user mistakes (like missing productId) from bigger, internal issues (like a DB failure).
       - This way, the client can respond appropriately—maybe prompting the user to fix their input or retry the request if it’s a server-side hiccup.
 
+---
+
 ### Part 3: Aligning Technology with Business
 
 #### Task Requirements (Part 3)
