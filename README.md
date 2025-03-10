@@ -39,6 +39,9 @@ This assignment **README.md** document clearly outlines tasks, explanations, dia
       - [2. Improvements](#2-improvements)
       - [3. Broader Architectural Consideration](#3-broader-architectural-consideration)
       - [4. Fixed Pseudo Code](#4-fixed-pseudo-code)
+  - [Part 3: Aligning Technology with Business](#part-3-aligning-technology-with-business)
+    - [Task Requirements (Part 3)](#task-requirements-part-3)
+    - [My Explanation (Part 3)](#my-explanation-part-3)
 
 ---
 
@@ -198,3 +201,25 @@ def create_order(request):
     # Successful transaction
     return jsonify({"orderId": order_id, "status": "created"}), 201
 ```
+
+##### 2. Improvements: Key Improvements
+
+   1. Transactions
+      - By wrapping the order creation and stock update in a single transaction, if something goes wrong, everything rolls back automatically. This prevents those awkward partial updates where the order is created but the stock isn’t updated.
+   2. Concurrency Controls
+      - Adding WHERE stock > 0 ensures we don’t accidentally oversell when lots of people place orders at once.
+      - If the query doesn’t return a row, we know there’s a concurrency conflict or not enough stock, so the process is immediately stopped.
+   3. Parameterized Queries
+      - By passing values securely into the query (rather than building strings), we protect against SQL injection attempts and keep data safe.
+   4. Clear Error Handling
+      - We send a 400 status if productId is missing, so the client immediately knows the request wasn’t valid.
+      - We use a 500 status if the database operation fails (and log details on our end), ensuring any errors are rolled back without messing up the data.
+   5. Meaningful Responses
+      - We differentiate user mistakes (like missing productId) from bigger, internal issues (like a DB failure).
+      - This way, the client can respond appropriately—maybe prompting the user to fix their input or retry the request if it’s a server-side hiccup.
+
+### Part 3: Aligning Technology with Business
+
+#### Task Requirements (Part 3)
+
+#### My Explanation (Part 3)
