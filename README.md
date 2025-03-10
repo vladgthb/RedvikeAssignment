@@ -53,6 +53,219 @@ I have addressed each task individually, clearly organizing instructions, explan
 
 ## Tasks
 
+---
+
+### Part 1: Real-World System Design
+
+#### Task Requirements Part1
+**Scenario**:
+<br />
+Company XYZ is launching an online marketplace that serves web and mobile
+customers. <br /> The main requirements include:
+
+1. Scalability & Availability - The system must be able to handle sudden spikes
+   (e.g., flash sales, holiday shopping, marketing campaigns that suddenly drive
+   traffic).
+2. Data Consistency & Reliability - Orders must be processed reliably with
+   emphasis on. consistent inventory updates.
+3. Integration - Support for third-party payment providers and external inventory
+   systems must be included.
+4. Observability & Security - Robust monitoring/logging and strongauthorization
+   measures.
+
+**Tasks:**
+<br />
+1. Architecture Overview:
+    - Provide a high-level design (diagram or detailed textual description) of the
+      system. Include major components (e.g., API gateways, services,
+      databases, message queues, etc.) and outline how they interact.
+2. Design Rationale:
+    - Explain your technology and design choices. Why did you choose
+      particular patterns (e.g., microservices vs. modular monolith, eventual
+      consistency vs. strong consistency in parts of the system, etc.)?
+3. Handling Failures & Tradeoffs:
+    - Identify potential bottlenecks, single points of failure, or performance issues.
+    - Propose strategies to mitigate these risks.
+
+#### My Explanation Part1
+
+This section covers my proposed architecture and reasoning for **Part 1** of the assignment.
+
+#### Architecture Overview
+
+**High-Level Design**  
+Below is a conceptual overview of how the system might look when delivering an online marketplace that handles both web and mobile customers:
+```shell
+┌─────────────────────────────────────────┐
+│               Client Layer              │
+│   (Web/Mobile - React, iOS, Android)    │
+└─────────────────────────────────────────┘
+                 │     ↑
+    (HTTP/HTTPS) │     │ (HTTP/HTTPS)
+                 ↓     │
+┌─────────────────────────────────────────┐
+│           API Gateway / Load Balancer   │
+└─────────────────────────────────────────┘
+                    │
+                    ↓
+┌─────────────────────────────────────────┐
+│     Application Layer (Modular Monolith)│
+│     - Express Server + TS               │
+│       (Orders, Products, etc.)          │
+│     - Common Modules                    │
+│       for Auth, Payments, Observability │
+└─────────────────────────────────────────┘
+                    │
+                    ↓
+┌─────────────────────────────────────────┐
+│         Database Layer (PostgreSQL)     │
+│        + Caching (Redis or similar)     │
+└─────────────────────────────────────────┘
+
+┌─────────────────────────────────────────┐
+│ External Services / 3rd Parties         │
+│  - Payment Providers (Stripe, PayPal)   │
+│  - External Inventory Systems           │
+└─────────────────────────────────────────┘
+```
+
+1. **Client Layer**:
+    - Could be React-based web applications or mobile apps.
+    - Communicates via REST (or potentially GraphQL) with the back end.
+
+2. **API Gateway / Load Balancer**:
+    - Provides a single entry point for clients, handling load balancing, rate limiting, and routing to the correct service instances if you scale horizontally.
+
+3. **Application Layer (Modular Monolith)**:
+    - Houses the core business logic for Orders, Products, Authentication, etc.
+    - Organized into modules, as shown in the folder structure.
+    - Provides a foundation that can be split out into microservices once traffic or feature demands necessitate it.
+
+4. **Database Layer**:
+    - Relational database (e.g., PostgreSQL) with ACID transactions ensures data consistency.
+    - Caching layers (e.g., Redis) may be added to improve response times, especially for frequently accessed data.
+
+5. **External Services**:
+    - Payment providers (Stripe/PayPal) for handling transactions.
+    - External inventory APIs to sync stock levels if you have multiple sales channels.
+    - Observability tools (e.g., Datadog, Prometheus) for monitoring.
+
+---
+
+#### 2. Design Rationale
+
+1. **Technology Choices**:
+    - **Modular Monolith**:
+        - Eases development in the early stages.
+        - Maintains clear boundaries (Orders, Products, Payments), simplifying future refactoring.
+        - Reduces operational overhead compared to microservices (fewer deployments, simpler networking).
+    - **TypeScript + Node.js**:
+        - Type safety ensures fewer runtime errors.
+        - Excellent ecosystem and developer productivity.
+    - **PostgreSQL**:
+        - Provides robust transactions for critical operations like order creation, payments, and inventory updates.
+        - Widely supported in the Node ecosystem, easy to scale vertically or horizontally.
+
+2. **Strong vs. Eventual Consistency**:
+    - **Orders and Payments**: Use strong consistency (ACID transactions) to avoid partial updates or missed inventory decrements.
+    - **Analytics or Inventory Sync with External Systems**: Eventual consistency can be acceptable—updates can happen asynchronously (e.g., via message queues).
+
+3. **Scalability and Availability**:
+    - **Horizontal Scaling**: Spin up multiple instances of the main application behind a load balancer.
+    - **Caching**: Use Redis (or similar) to cache frequently accessed data (e.g., product listings) to reduce DB load.
+    - **Database Scalability**: Implement read replicas, or partition data if the user base grows exponentially.
+
+---
+
+#### 3. Handling Failures & Tradeoffs
+
+1. **Potential Bottlenecks & Single Points of Failure**:
+    - **Database**: If the database goes down or becomes a performance bottleneck, the entire system can stall. Mitigation includes replication, failover strategies, and robust backup policies.
+    - **Network Spikes**: Sudden traffic surges (flash sales) can overwhelm the app layer. Horizontal scaling and queue-based processing help mitigate.
+    - **3rd-Party Dependencies**: Payment providers can fail or slow down. Apply circuit breakers and proper retry logic.
+
+2. **Strategies to Mitigate Risks**:
+    - **Message Queues**: Decouple certain tasks (like sending order confirmation emails, performing analytics) to avoid holding up core order-processing requests.
+    - **Retries and Dead-Letter Queues**: For external service calls, implement exponential backoff and dead-letter queues to handle repeated failures gracefully.
+    - **Monitoring & Observability**: Real-time monitoring (Datadog, Prometheus) plus structured logging (Winston, Pino) to detect and resolve issues quickly.
+    - **Circuit Breaker Pattern**: For third-party integrations, break the connection if requests repeatedly fail, preventing the entire system from slowing down.
+
+3. **Tradeoffs**:
+    - **Modular Monolith vs. Microservices**:
+        - **Short-Term**: A modular monolith is simpler for a startup environment and reduces DevOps overhead.
+        - **Long-Term**: If the application grows, one or more modules can be extracted into separate microservices for independent scaling, or to isolate failure domains.
+    - **Strong Consistency vs. Eventual Consistency**:
+        - **Critical Data** (Orders, Payments): Must be accurate and up-to-date to prevent over-selling or transaction issues.
+        - **Non-Critical Data** (Analytics, Reporting): Can often tolerate delays. Reduces load on the primary database.
+
+
+```shell
+RedvikeAssignment/
+├── README.md                                 # Contains All Information about tasks, my explanation and code architecture
+├── docker-compose.yml                        # Docker configuration for multi-container setup
+├── backend
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── src
+│   │   ├── app
+│   │   │   ├── routes
+│   │   │   │   └── index.ts                  # Aggregates and exposes all module routes
+│   │   │   ├── middlewares
+│   │   │   ├── controllers
+│   │   │   │   └── health.controller.ts      # Example: global controllers
+│   │   │   └── server.ts                     # Central Express setup (entry point)
+│   │   ├── core
+│   │   │   ├── config                        # Configuration logic (env, secrets)
+│   │   │   │   └── index.ts
+│   │   │   └── infrastructure
+│   │   │       └── db
+│   │   │           ├── prismaClient.ts       # e.g., Prisma client instance
+│   │   │           └── migrations            # if using raw SQL migrations or similar
+│   │   ├── modules
+│   │   │   ├── orders
+│   │   │   │   ├── domain
+│   │   │   │   │   ├── entities              # Domain entity definitions
+│   │   │   │   │   │   └── order.entity.ts
+│   │   │   │   │   └── value-objects         # Value objects, e.g. OrderId, Price
+│   │   │   │   ├── application
+│   │   │   │   │   ├── dto                   # Data Transfer Objects
+│   │   │   │   │   │   └── createOrder.dto.ts
+│   │   │   │   │   └── services              # Application services containing business logic
+│   │   │   │   │       └── order.service.ts
+│   │   │   │   ├── infrastructure
+│   │   │   │   │   ├── repositories          # Database interaction, queries
+│   │   │   │   │   │   └── order.repository.ts
+│   │   │   │   │   └── mappers               # Converting domain objects to DB records
+│   │   │   │   └── interfaces
+│   │   │   │       └── order.controller.ts   # Module-specific Express endpoints
+│   │   │   └── products
+│   │   │       ├── domain
+│   │   │       │   └── entities
+│   │   │       │       └── product.entity.ts
+│   │   │       ├── application
+│   │   │       │   └── services
+│   │   │       │       └── product.service.ts
+│   │   │       ├── infrastructure
+│   │   │       │   └── repositories
+│   │   │       │       └── product.repository.ts
+│   │   │       └── interfaces
+│   │   │           └── product.controller.ts
+│   │   └── index.ts                          # A single aggregator entry point
+├── frontend
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── public
+│   └── src
+│       ├── index.tsx                         # React entry point
+│       ├── App.tsx                           # Main app component
+│       ├── components
+│       │   └── OrderForm.tsx                 # Order form UI component
+│       └── services
+│           └── api.ts                        # API integration layer for HTTP requests
+```
+
+---
+
 ### Part 2: Code Analysis & Improvement
 
 #### Task Requirements (Part 2)
