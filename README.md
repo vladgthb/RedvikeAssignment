@@ -233,3 +233,21 @@ Describe the following:
    outcome?
 
 #### My Explanation (Part 3)
+
+1. **Ensuring Technical Solutions Align with Broader Business Goals**
+   
+   In fast-moving markets, we make a point to regularly meet with stakeholders—whether that’s product owners, marketing teams, or executive leadership—to understand current and upcoming priorities. We keep our eyes on the big picture: revenue drivers, user satisfaction metrics, and strategic deadlines. Whenever we propose a new feature or architectural change, we tie it back to a tangible business benefit, like improving user onboarding speed or reducing infrastructure costs. By demonstrating how each technical decision advances the company’s objectives, we stay in sync with evolving requirements.
+
+2. **Real (or Hypothetical) Scenario Balancing Technical Debt, Scalability, and Evolving Requirements**
+
+   Imagine we started out with a single-customer MVP for an e-commerce platform. Initially, everything was in one big file, and we took a few shortcuts (ahem, “technical debt”) to launch quickly. However, when two more clients came onboard, each with unique product catalog structures and payment preferences, we realized the existing code was about to collapse under the load.
+
+   - Scalability: We anticipated the next few clients could bring in traffic spikes, so we introduced a more modular design—splitting product management, orders, and payment logic into separate domains within our monolith.
+   - Evolving Requirements: Each client had distinct reporting needs, so we leveraged a flexible data model and a small analytics service that could adapt without touching core order logic.
+   - Technical Debt: Instead of a massive rewrite, we tackled refactoring incrementally, cleaning up the parts of the code that caused the biggest issues first. We created a “tech debt” backlog and scheduled time each sprint to fix or improve one piece of the system.
+
+3. **Our Approach, Tradeoffs, and Outcome**
+
+   - Approach: We combined a short-term focus on shipping essential features with a mid-term plan to pay down the most harmful technical debt. We also established a consistent release process, including automated tests to reduce the risk of breaking critical functionality.
+   - Tradeoffs: Some lower-priority features were delayed so we could stabilize the codebase. We accepted minor performance hits in non-critical areas to meet hard deadlines in others.
+   - Outcome: We successfully onboarded new clients without major disruptions, and the system evolved into a more maintainable architecture. Our technical improvements also gave us a stable foundation to roll out new features faster, ultimately supporting both our company’s revenue goals and each client’s unique requirements.
