@@ -1,7 +1,5 @@
 # Redvike Assignment
 
----
-
 ## Overview
 
 This repository presents a full-stack solution developed to meet the Redvike assignment requirements as part of the interview process. It features a scalable system design, a reliable order processing flow, and technical decisions that support clear business objectives.
@@ -47,8 +45,6 @@ I have addressed each task individually, clearly organizing instructions, explan
 ---
 
 ## Tasks
-
----
 
 ### Part 2: Code Analysis & Improvement
 
