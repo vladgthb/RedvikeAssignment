@@ -222,4 +222,14 @@ def create_order(request):
 
 #### Task Requirements (Part 3)
 
+**Given:**
+Describe the following:
+1. How do you ensure that the technical solutions you design align with and
+   support the broader business goals of an organization, especially in rapidly
+   changing markets?
+2. Describe a real or hypothetical scenario where you had to balance factors
+   such as technical debt, scalability, and evolving business requirements.
+3. What was your approach, what tradeoffs did you consider, and what was the
+   outcome?
+
 #### My Explanation (Part 3)
