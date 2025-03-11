@@ -106,7 +106,7 @@ Below is a conceptual overview of how the system might look when delivering an o
 ┌──────────────────────────────────────────────┐
 │               Client Layer                   │
 │   (Web/Mobile - React, iOS, Android)         │
-│   - User Types: Business Account,            │
+│   - User Types: Business Account, Consumer,  │
 │     Marketing Team, etc.                     │
 └──────────────────────────────────────────────┘
                  │         ↑
