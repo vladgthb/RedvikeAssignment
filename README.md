@@ -6,6 +6,8 @@ This repository presents a full-stack solution developed to meet the Redvike ass
 
 Additionally, the repository includes code from the **Part 1** assignment with a fully dockerized setup for easy local installation, along with a minimal user interface powered by Swagger UI to visualize and test API interactions. This setup provides practical insights into my approach to clean coding, structured documentation, and effective containerization.
 
+**Note:** I will try to add the code within the day, yesterday I did not have time to populate the code, so if you are checking this repo, please please come back tomorrow as well for the code.
+
 **Note:** Certain functionalities, such as detailed payments integration, are simplified or omitted intentionally to focus clearly on core architectural concepts and coding practices (clean code).
 
 **Original Instructions:**
