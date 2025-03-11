@@ -103,34 +103,37 @@ This section covers my proposed architecture and reasoning for **Part 1** of the
 **High-Level Design**  
 Below is a conceptual overview of how the system might look when delivering an online marketplace that handles both web and mobile customers:
 ```shell
-┌─────────────────────────────────────────┐
-│               Client Layer              │
-│   (Web/Mobile - React, iOS, Android)    │
-└─────────────────────────────────────────┘
-                 │     ↑
-    (HTTP/HTTPS) │     │ (HTTP/HTTPS)
-                 ↓     │
-┌─────────────────────────────────────────┐
-│           API Gateway / Load Balancer   │
-└─────────────────────────────────────────┘
-                    │
-                    ↓
-┌─────────────────────────────────────────┐
-│     Application Layer (Modular Monolith)│
-│     - Express Server + TS               │
-│       (Orders, Products, etc.)          │
-│     - Common Modules                    │
-│       for Auth, Payments, Observability │
-└─────────────────────────────────────────┘
-                    │
-                    ↓
-┌─────────────────────────────────────────┐
-│         Database Layer (PostgreSQL)     │
-│        + Caching (Redis or similar)     │
-└─────────────────────────────────────────┘
-
-┌─────────────────────────────────────────┐
-│ External Services / 3rd Parties         │
+┌──────────────────────────────────────────────┐
+│               Client Layer                   │
+│   (Web/Mobile - React, iOS, Android)         │
+│   - User Types: Business Account,            │
+│     Marketing Team, etc.                     │
+└──────────────────────────────────────────────┘
+                 │         ↑
+   (HTTP/HTTPS)  │         │  (HTTP/HTTPS)
+                 ↓         │
+┌──────────────────────────────────────────────┐
+│         API Gateway / Load Balancer          │
+└──────────────────────────────────────────────┘
+                      │
+                      ↓
+┌──────────────────────────────────────────────┐
+│   Application Layer (Modular Monolith)       │
+│   - Express Server + TypeScript              │
+│     (Orders, Products, etc.)                 │
+│   - Authentication & RBAC                    │
+│     (manages user roles like Business,       │
+│      Marketing, etc.)                        │
+└──────────────────────────────────────────────┘
+                      │                            # OPTIONAL! ETL if we need to parse items from different resources
+                      ↓                               ┌──────────────────────────────────────────────┐
+┌─────────────────────────────────────────┐           │  Data Orchestration & ETL Layer              │
+│         Database Layer (PostgreSQL)     │           │  (Apache Airflow Scheduler/Executor)         │
+│        + Caching (Redis or similar)     │           │  - Executes tasks from various sources       │
+└─────────────────────────────────────────┘ ←───────  │  - Performs ETL (Extract, Transform, Load)   │
+                                                      │  - Populates data into the Database/         │
+┌─────────────────────────────────────────┐           │    Data Warehouse                            │
+│ External Services / 3rd Parties         │           └──────────────────────────────────────────────┘
 │  - Payment Providers (Stripe, PayPal)   │
 │  - External Inventory Systems           │
 └─────────────────────────────────────────┘
