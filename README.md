@@ -208,6 +208,7 @@ Below is a conceptual overview of how the system might look when delivering an o
         - **Critical Data** (Orders, Payments): Must be accurate and up-to-date to prevent over-selling or transaction issues.
         - **Non-Critical Data** (Analytics, Reporting): Can often tolerate delays. Reduces load on the primary database.
 
+#### Code Structure
 
 ```shell
 RedvikeAssignment/
